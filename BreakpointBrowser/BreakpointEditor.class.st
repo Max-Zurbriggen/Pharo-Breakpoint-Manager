@@ -17,14 +17,14 @@ Class {
 
 { #category : #layout }
 BreakpointEditor >> defaultLayout [
-	
+		
 	^ SpBoxLayout newTopToBottom
 		add: (SpGridLayout build: [ :builder |
 			builder
-				add: 'Enabled';
+				add: 'Enabled:';
 				add: enabledCheckbox;
 				nextRow;
-				add: 'Oneshot active:';
+				add: 'Once active:';
 				add: oneshotCheckbox;
 				nextRow;
 				add: 'On Count active:';
@@ -37,14 +37,14 @@ BreakpointEditor >> defaultLayout [
 				add: breakOnCountTextbox;
 				nextRow;
 				add: 'Group:';
-				add: groupTextbox;
-				nextRow;
+				add: groupTextbox]);
+"				nextRow;
 				add: 'Condition active:';
 				add: conditionCheckbox;
 				nextRow;
 				add: 'Condition:';
-				add: conditionTextbox]);
-		yourself
+				add: conditionTextbox]);"
+		yourself.
 ]
 
 { #category : #layout }
@@ -66,7 +66,7 @@ BreakpointEditor >> initializePresenters [
 BreakpointEditor >> initializeSaveChanges [ 
 		
 	enabledCheckbox whenChangedDo: [ :s | breakpoint enabled: s ].
-	oneshotCheckbox whenChangedDo: [ :s | breakpoint oneShot: s ].
+	oneshotCheckbox whenChangedDo: [ :s | breakpoint once: s ].
 	oncountCheckbox whenChangedDo: [ :s | breakpoint onCount: s ].
 	currentCountTextbox whenTextChangedDo: [ :state | breakpoint count: state ].
 	breakOnCountTextbox whenTextChangedDo: [ :state | breakpoint breakOnCount: state ].
@@ -96,7 +96,7 @@ BreakpointEditor >> selectBreakpoint: aBreakpoint [
 BreakpointEditor >> update [ 
 	
 	enabledCheckbox state: breakpoint isEnabled.
-	oneshotCheckbox state: breakpoint oneShot.
+	oneshotCheckbox state: breakpoint once.
 	oncountCheckbox state: breakpoint onCount.
 	currentCountTextbox number: breakpoint count.
 	breakOnCountTextbox number: breakpoint breakOnCount.
