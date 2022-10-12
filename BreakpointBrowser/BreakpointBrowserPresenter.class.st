@@ -6,7 +6,6 @@ Class {
 	#superclass : #SpPresenter,
 	#instVars : [
 		'bpGroupsList',
-		'groupsButtonToolbar',
 		'methodCode',
 		'breakpointsTable'
 	],
@@ -33,18 +32,15 @@ BreakpointBrowserPresenter >> breakpointContextMenu [
 		addGroup: [ :aGroup | 
 			aGroup
 				addItem: [ :anItem | 	anItem
-					name: 'edit breakpoint';
-					description: 'Opens a window to edit this breakpoint';
+					name: 'Inspect';
+					description: 'Inspect this breakpoint';
 					action: [ 
-						BreakpointEditor new open; selectBreakpoint: (breakpointsTable selectedItem) ] ];
-"				addItem: [ :anItem | 
+						breakpointsTable selectedItem inspect ] ];
+				"addItem: [ :anItem | 
 					anItem
-						name: 'Change group';
-						description: 'Opens a window to change the group of this breakpoint';
-						action: [ 
-							self changeBreakpointGroup: (breakpointsTable selectedItem ).  
-							self updateBreakpointGroups.
-							breakpointsTable refresh.] ];"
+						name: 'Browse Method';
+						description: 'Open this method';
+						action: [ breakpointsTable selectedItem >>>code here has to be implemented<<< browse] ];"
 				addItem: [ :anItem | anItem
 					name: 'Remove';
 					description: 'Remove this breakpoint';
@@ -73,7 +69,7 @@ BreakpointBrowserPresenter >> buildTableData: group [
 	"set the items of the breakpoints table to match the selected group"
 
 	group ifNil: [ ^ BreakpointGroup allBreakpointsGroup breakpoints ].
-	breakpointsTable items: group breakpoints.
+	breakpointsTable items: group breakpoints asOrderedCollection . 
 	
 ]
 
@@ -120,7 +116,6 @@ BreakpointBrowserPresenter >> defaultLayout [
 				   positionOfSlider: 17 percent;
 				   add: (SpBoxLayout newTopToBottom 
 						add: bpGroupsList;
-						add: groupsButtonToolbar; "here should the interface be to edit groups somehow"
 						yourself );
 				   add: breakpointsTable;
 				   yourself);
@@ -170,6 +165,25 @@ BreakpointBrowserPresenter >> getBreakpointTarget: aBreakpoint [
 	"returns the target of a breakpoint"
 	^ aBreakpoint printTargetForBreakpointInspection.
 
+]
+
+{ #category : #initialization }
+BreakpointBrowserPresenter >> groupsContextMenu [
+	"context menu for changing groups, removing, enabling/disabling breakpoints"
+	^ self newMenu
+		addGroup: [ :aGroup | 
+			aGroup
+				addItem: [ :anItem | 	anItem
+					name: 'New Group';
+					description: 'Creates a new breakpoint group';
+					action: [ self doNewGroup  ] ];
+				addItem: [ :anItem | 	anItem
+					name: 'Delete Group';
+					description: 'Delete the selected breakpoint group';
+					action: [ 
+						self doDeleteGroup  ];
+					enabled: [ (bpGroupsList selectedItem ~= BreakpointGroup allBreakpointsGroup) and:  (bpGroupsList selectedItem ~= BreakpointGroup ungroupedBreakpointsGroup)  ] ].
+			].
 ]
 
 { #category : #initialization }
@@ -227,27 +241,6 @@ BreakpointBrowserPresenter >> initializeBreakpointTable [
 ]
 
 { #category : #initialization }
-BreakpointBrowserPresenter >> initializeGroupButtonToolbar [
-
-	groupsButtonToolbar := self newToolbar
-		addItem: (SpToolbarButtonPresenter new
-			label: 'New';
-			icon: (self iconNamed: #smallNew);
-			help: 'create a new script';
-			action: [ self doNewGroup ];
-			yourself);
-		addItem: (SpToolbarButtonPresenter new
-			label: 'Delete';
-			icon: (self iconNamed: #smallDelete);
-			help: 'delete the selected script';
-			action: [ self doDeleteGroup ];
-			
-			yourself);
-
-		yourself.
-]
-
-{ #category : #initialization }
 BreakpointBrowserPresenter >> initializeGroups [
 	"initializes the breakpoint groups list"
 	bpGroupsList := self newList
@@ -262,7 +255,8 @@ BreakpointBrowserPresenter >> initializeGroups [
 	bpGroupsList acceptDrop: [ :s | 
 		(s passenger at:1) group: (BreakpointGroup all at:(s index)). 
 		bpGroupsList refresh.
-		breakpointsTable refresh.]
+		breakpointsTable refresh.].
+	bpGroupsList contextMenu: self groupsContextMenu .
 		
 ]
 
@@ -270,7 +264,6 @@ BreakpointBrowserPresenter >> initializeGroups [
 BreakpointBrowserPresenter >> initializePresenters [
 	self initializeGroups.
 	self initializeBreakpointTable.
-	self initializeGroupButtonToolbar.
 	self updateBreakpointGroups.
 
 	methodCode := self newCode 
@@ -307,9 +300,18 @@ BreakpointBrowserPresenter >> updateMethodSourceCode: aBreakpoint [
 	
 	aBreakpoint isVariableBreakpoint 
 		ifTrue: [ 
+			"TODO this functionality should probably be somewhere else"
+			"methodToNodes is from BreakpointNavigator package from Steven"
+			| methodsToNodes |
+			methodsToNodes := Dictionary new.
+			aBreakpoint link nodes do: [ :n | 
+				(methodsToNodes
+			 	at: n methodNode method
+			 	ifAbsentPut: [ OrderedCollection new ]) add: n ].
+			
 			methodCode text: ( (((SortedCollection sortBlock: [ :a :b | 
 				a methodClass name < b methodClass name ])
-				addAll: (aBreakpoint targetMethodsToNodesMap ) keys;
+				addAll: methodsToNodes keys;
 				yourself) at:1) sourceCode).
 			methodCode beForBehavior: aBreakpoint targetClassOrMethod ]
 		ifFalse: [ 
