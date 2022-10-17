@@ -233,7 +233,7 @@ BreakpointManager >> initializeBreakpointTable [
 		addColumn:
 			((SpStringTableColumn
 				title: 'Group'
-				evaluated: [ :item | item group name]) 
+				evaluated: [ :item | item group ifNotNil: [ :g | g name]]) 
 				width: 100; 
 				yourself);
 		contextMenu: self breakpointContextMenu.
