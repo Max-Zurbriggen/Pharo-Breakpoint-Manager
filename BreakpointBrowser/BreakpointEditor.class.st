@@ -47,7 +47,7 @@ BreakpointEditor >> defaultLayout [
 		yourself.
 ]
 
-{ #category : #layout }
+{ #category : #initialization }
 BreakpointEditor >> initializePresenters [
 
 	enabledCheckbox := self newCheckBox state: true.
@@ -62,7 +62,7 @@ BreakpointEditor >> initializePresenters [
 	self initializeSaveChanges.
 ]
 
-{ #category : #layout }
+{ #category : #initialization }
 BreakpointEditor >> initializeSaveChanges [ 
 		
 	enabledCheckbox whenChangedDo: [ :s | breakpoint enabled: s ].
@@ -74,7 +74,7 @@ BreakpointEditor >> initializeSaveChanges [
 	"conditions not yet implemented"
 ]
 
-{ #category : #layout }
+{ #category : #initialization }
 BreakpointEditor >> initializeWindow: aWindowPresenter [
 	
 	aWindowPresenter
@@ -83,7 +83,7 @@ BreakpointEditor >> initializeWindow: aWindowPresenter [
 		initialExtent: 400@400
 ]
 
-{ #category : #layout }
+{ #category : #API }
 BreakpointEditor >> selectBreakpoint: aBreakpoint [
 
 	breakpoint := aBreakpoint.
@@ -92,7 +92,7 @@ BreakpointEditor >> selectBreakpoint: aBreakpoint [
 
 ]
 
-{ #category : #layout }
+{ #category : #update }
 BreakpointEditor >> update [ 
 	
 	enabledCheckbox state: breakpoint isEnabled.
@@ -100,7 +100,7 @@ BreakpointEditor >> update [
 	oncountCheckbox state: breakpoint onCount.
 	currentCountTextbox number: breakpoint count.
 	breakOnCountTextbox number: breakpoint breakOnCount.
-	groupTextbox text: breakpoint group name.
+	groupTextbox text: (breakpoint group ifNotNil: [:g | g name ]).
 	"conditionCheckbox state: breakpoint ???."
 	"conditionTextbox text: (breakpoint condition)."
 ]
