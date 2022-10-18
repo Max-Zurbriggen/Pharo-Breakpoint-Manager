@@ -162,6 +162,12 @@ BreakpointManager >> getBreakpointClass: aBreakpoint [
 ]
 
 { #category : #private }
+BreakpointManager >> getBreakpointScope: aBreakpoint [
+	"returns the target of a breakpoint"
+	^ aBreakpoint isObjectCentric ifTrue: ['self'] ifFalse:[self getBreakpointClass: aBreakpoint]
+]
+
+{ #category : #private }
 BreakpointManager >> getBreakpointTarget: aBreakpoint [
 	"returns the target of a breakpoint"
 	^ aBreakpoint printTargetForBreakpointInspection.
@@ -231,6 +237,10 @@ BreakpointManager >> initializeBreakpointTable [
 			(SpStringTableColumn
 				title: 'Target'
 				evaluated: [ :item | self getBreakpointTarget: item]);
+		addColumn:
+			(SpStringTableColumn
+				title: 'Scope'
+				evaluated: [ :item | self getBreakpointScope: item ]);
 		addColumn:
 			((SpStringTableColumn
 				title: 'Group'
