@@ -206,6 +206,7 @@ BreakpointManager >> initializeBreakpointTable [
 
 	breakpointsTable := self newTable.
 	breakpointsTable dragEnabled: true.
+	breakpointsTable beResizable.
 	breakpointsTable 
 		addColumn:
 			((SpCheckBoxTableColumn
