@@ -16,7 +16,7 @@ Class {
 BPScriptingPresenter class >> menuCommandOn: aBuilder [
 
 	<worldMenu>
-	(aBuilder item: #'Breakpoint Browser with Script UI')
+	(aBuilder item: #'Script Manager')
 		parent: #Debug;
 		action: [ self new open ];
 		order: -2;
@@ -150,7 +150,7 @@ BPScriptingPresenter >> initializeToolbar [
 BPScriptingPresenter >> initializeWindow: aWindowPresenter [
 	
 	aWindowPresenter
-		title: 'Script Browser';		
+		title: 'Script Manager';		
 		windowIcon: (self application iconNamed: #glamorousBug);
 		initialExtent: 800@400
 ]
