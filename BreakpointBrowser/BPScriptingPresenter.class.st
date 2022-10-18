@@ -3,7 +3,7 @@ I am an extention of the Breakpoint Browser. I include a UI for managing scripts
 "
 Class {
 	#name : #BPScriptingPresenter,
-	#superclass : #BreakpointBrowserPresenter,
+	#superclass : #SpPresenter,
 	#instVars : [
 		'scriptList',
 		'scriptCode',
@@ -54,17 +54,12 @@ BPScriptingPresenter >> connectPresenters [
 { #category : #layout }
 BPScriptingPresenter >> defaultLayout [
 
-	^ SpPanedLayout newTopToBottom
-		  add: (SpBoxLayout newTopToBottom 
-		add: super defaultLayout;
-		yourself);
-		add: (SpBoxLayout newTopToBottom
+	^ SpBoxLayout newTopToBottom
 				   add: buttonToolbar height: 50;
 				   add: (SpPanedLayout newTopToBottom
 						add: scriptList;
 						add: scriptCode;
 						yourself);
-					yourself);
 		  yourself
 ]
 
@@ -88,7 +83,6 @@ BPScriptingPresenter >> doRunScript [
 	"runs the selected script"
 	scriptList selectedItem ifNotNil: [ 
 		scriptList selectedItem run.
-		breakpointsTable refresh.
 	 ]
 ]
 
@@ -156,9 +150,9 @@ BPScriptingPresenter >> initializeToolbar [
 BPScriptingPresenter >> initializeWindow: aWindowPresenter [
 	
 	aWindowPresenter
-		title: 'Breakpoint Browser';		
+		title: 'Script Browser';		
 		windowIcon: (self application iconNamed: #glamorousBug);
-		initialExtent: 800@800
+		initialExtent: 800@400
 ]
 
 { #category : #actions }
